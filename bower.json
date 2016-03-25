@@ -1,0 +1,10 @@
+{
+  "name": "meetpointsAPI",
+  "description": "Pack&Pack Meetpoints API",
+  "version": "0.0.1",
+  "license": "Copyright",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.2"
+  }
+}
