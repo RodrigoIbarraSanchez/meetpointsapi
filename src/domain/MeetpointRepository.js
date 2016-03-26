@@ -1,4 +1,5 @@
 var MeetpointEntity = require("./MeetpointEntity");
+var meetpointDomainService = require('./meetpointDomainService')
 
 exports.create = function (meetpointPayload, callback) {
 	var meetpoint = new MeetpointEntity()
@@ -32,9 +33,19 @@ exports.list = function (callback) {
 }
 
 exports.findClosest = function(coords, callback){
-	callback({}, 0)
+	this.list(function (err, meetpoints) {
+		if (err) throw err
+		meetpointDomainService.findClosest(coords, meetpoints, function (closest, distance) {
+			callback(closest, distance)
+		})
+	})
 }
 
 exports.findByRadio = function(coords, distance, callback){
-	callback([])
+	this.list(function (err, meetpoints) {
+		if (err) throw err
+		meetpointDomainService.findByRadio(coords, meetpoints, function (closeMeetpoints) {
+			callback(closeMeetpoints)
+		})
+	})
 }
