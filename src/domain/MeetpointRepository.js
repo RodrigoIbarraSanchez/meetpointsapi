@@ -41,11 +41,11 @@ exports.findClosest = function(coords, callback){
 	})
 }
 
-exports.findByRadio = function(coords, distance, callback){
+exports.findByRadio = function(coords, radio, callback){
 	this.list(function (err, meetpoints) {
 		if (err) throw err
-		meetpointDomainService.findByRadio(coords, meetpoints, function (closeMeetpoints) {
-			callback(closeMeetpoints)
+		meetpointDomainService.findByRadio(coords, radio, meetpoints, function (closeMeetpoints, radio) {
+			callback(closeMeetpoints, radio)
 		})
 	})
 }

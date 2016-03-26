@@ -1,4 +1,5 @@
-var MeetpointRepository = require("../domain/MeetpointRepository");
+var MeetpointRepository = require("../domain/MeetpointRepository")
+var config = require("../../config")
 
 module.exports = function (coords, callback) {
 
@@ -7,19 +8,48 @@ module.exports = function (coords, callback) {
 		lng: Number(coords.lng)
 	}
 
-	MeetpointRepository.findClosest(coords, function (closest, distance) {
+	var radio = config.minimumRadioDistance
+	var meetpoints = []
+	var closest = null
 
-		MeetpointRepository.findByRadio(coords, distance, function (meetpoints) {
-			
-			callback({
-				center: coords,
-				distance: distance,
-				closest: closest,
-				meetpoints: meetpoints
-			})
+	var findClosestReady = false
+	var findByRadioReady = false
+	var callbackSent = false
 
-		})
+	MeetpointRepository.findClosest(coords, function (theClosest, distance) {
+
+		closest = theClosest
+
+		findClosestReady = true
+
+		if (findByRadioReady && !callbackSent){
+			//console.log('terminó al final el find closest')
+			ready()
+		}
+	})
+
+	MeetpointRepository.findByRadio(coords, radio, function (theMeetpoints, theRadio) {
+		
+		meetpoints = theMeetpoints
+		radio = theRadio
+
+		findByRadioReady = true
+
+		if (findClosestReady && !callbackSent){
+			//console.log('terminó al final el find by radio')
+			ready()
+		}
 
 	})
+
+	function ready() {
+		callbackSent = true
+		callback({
+			center: coords,
+			radio: radio,
+			closest: closest,
+			meetpoints: meetpoints
+		})
+	}
 
 }
