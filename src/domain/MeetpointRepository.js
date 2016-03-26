@@ -16,7 +16,7 @@ exports.create = function (meetpointPayload, callback) {
 
 exports.removeAll = function () {
 	MeetpointEntity.find({}, function (err, meetpoints) {
-		if (err) throw err
+		if (err) console.log(err)
 		meetpoints.forEach(function (meetpoint) {
 			meetpoint.remove(function(err, meetpoint){
 				if (err) throw err

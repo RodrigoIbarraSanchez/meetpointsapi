@@ -3,7 +3,6 @@ var MeetpointRepository = require("./src/domain/MeetpointRepository")
 
 mongoose.connect('mongodb://localhost:27017/meetpoints');
 
-
 var payload = [
 {
     name: "Punta del Cielo Huexotitla",
@@ -60,11 +59,19 @@ var payload = [
     schedules: "Nunca cierra"
 }]
 
-//MeetpointRepository.removeAll()
+var action = process.argv[2]
 
-payload.forEach(function (meetpoint) {
-    MeetpointRepository.create(meetpoint, function (err, meetpoint) {
-        if (err) console.log('Error: ' + err)
-        console.log(JSON.stringify(meetpoint))
-    })
-})
+switch (action){
+    case 'loadAll':
+        payload.forEach(function (meetpoint) {
+            MeetpointRepository.create(meetpoint, function (err, meetpoint) {
+                if (err) console.log('Error: ' + err)
+                console.log(JSON.stringify(meetpoint))
+            })
+        })
+        break
+    case 'removeAll':
+        MeetpointRepository.removeAll()
+    default:
+        console.log('Debes especificar una acción como parámetro ("loadAll", "removeAll")')
+}
