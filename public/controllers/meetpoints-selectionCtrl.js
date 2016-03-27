@@ -20,7 +20,10 @@ function (                                $scope,   $state,   meetpointService) 
 				$scope.myPlace = myPlace
 			})
 		})
+	}, function (meetpoints) {
+		meetpointService.createMeetpointsMarkers(meetpoints, function (markers) {
+			$scope.meetpoints = markers
+		})
 	})
 
 }])
-

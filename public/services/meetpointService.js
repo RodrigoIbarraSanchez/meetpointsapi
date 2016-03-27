@@ -1,9 +1,9 @@
 angular.module('packmvp.meetpointService', [])
 
-.service('meetpointService', [
-function () {
+.service('meetpointService', ['$http', 'config',
+function (                     $http,   config) {
 	
-	this.setMap = function (init, whenPosition){
+	this.setMap = function (init, whenPosition, setMeetpoints){
 
 		init({
 			center: {
@@ -37,24 +37,37 @@ function () {
 					draggable: true,
 					animation: google.maps.Animation.DROP
 				},
-				/*events: {
-				dragend: function (marker, eventName, args) {
-				$log.log('marker dragend');
-				var lat = marker.getPosition().lat();
-				var lon = marker.getPosition().lng();
-				$log.log(lat);
-				$log.log(lon);
+				events: {
+					dragend: function (marker, eventName, args) {
+						var lat = marker.getPosition().lat()
+						var lng = marker.getPosition().lng()
 
-				$scope.marker.options = {
-				draggable: true,
-				labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-				labelAnchor: "100 0",
-				labelClass: "marker-labels"
-				};
+						findMeetpoints(lat, lng, function (meetpoints) {
+							setMeetpoints(meetpoints)
+						})
+					}
 				}
-				}
-				*/
 			})
+		})
+	}
+
+	this.createMeetpointsMarkers = function (meetpoints, callback) {
+
+		var markers = []
+
+		meetpoints.forEach(function (meetpoint, index, meetpoints) {
+			console.log('paso 2')
+			markers.push({
+				id: meetpoint.name,
+				coords: {
+					latitude: meetpoint.coordinates.lat,
+					longitude: meetpoint.coordinates.lng
+				}
+			})
+
+			if (meetpoints.length == index+1){
+				callback(markers)
+			}
 		})
 	}
 
@@ -70,7 +83,20 @@ function () {
 	        });
 	        setTimeout(function(){map.setZoom(cnt)}, 100); // 80ms is what I found to work well on my system -- it might not work well on all systems
 	    }
-	}  
+	}
+
+	function findMeetpoints(lat, lng, setMeetpoints) {
+		
+		$http.get(config.apiUrl+'/meetpoints?filter=map&lat='+lat+'&lng='+lng)
+		.then(function (res) {
+			if (res.data.success) {
+				setMeetpoints(res.data.map.meetpoints)
+			}
+			else
+				console.log("Error")			
+		})
+
+	}
 
 }])
 

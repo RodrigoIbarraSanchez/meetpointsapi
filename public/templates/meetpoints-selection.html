@@ -10,4 +10,10 @@
 		events="myPlace.events"
 		idkey="myPlace.id">
 	    </ui-gmap-marker>
+
+	    <ui-gmap-marker ng-repeat="meetpoint in meetpoints"
+		coords="meetpoint.coords"
+		idkey="meetpoint.id">
+	    </ui-gmap-marker>
+
 	</ui-gmap-google-map>
