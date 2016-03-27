@@ -1,4 +1,4 @@
-angular.module('packmvp.meetpoints-selection', ['ui.router', 'uiGmapgoogle-maps'])
+angular.module('packmvp.meetpoints-selection', ['ui.router', 'uiGmapgoogle-maps', 'packmvp.meetpointService'])
 
 .config(['$stateProvider', function ($stateProvider) {
 	$stateProvider.state('dashboard', {
@@ -8,9 +8,19 @@ angular.module('packmvp.meetpoints-selection', ['ui.router', 'uiGmapgoogle-maps'
 	})
 }])
 
-.controller('meetpoints-selectionCtrl', ['$scope', '$state',
-function (                                $scope,   $state) {
-	
-	$scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 }
+.controller('meetpoints-selectionCtrl', ['$scope', '$state', 'meetpointService',
+function (                                $scope,   $state,   meetpointService) {
+
+	meetpointService.setMap(function (map) {
+		$scope.map = map
+		$scope.myPlace = {id: 'myPlace'}
+	}, function (position, myPlace) {
+		$scope.$apply(function(){
+			$scope.map.control.animateRefresh(position, function () {
+				$scope.myPlace = myPlace
+			})
+		})
+	})
 
 }])
+

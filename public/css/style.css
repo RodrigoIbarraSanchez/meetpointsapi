@@ -1,1 +1,7 @@
-.angular-google-map-container { height: 100vh; }
+body {
+	background-color: black;
+}
+
+.angular-google-map-container {
+	height: 100vh;
+}

@@ -1,1 +1,13 @@
-<ui-gmap-google-map center='map.center' zoom='map.zoom'></ui-gmap-google-map>
+	<ui-gmap-google-map 
+	center="map.center"
+	control="map.control"
+	bounds="bounds"
+	options="map.options"
+	zoom="map.zoom">
+		<ui-gmap-marker 
+		coords="myPlace.coords"
+		options="myPlace.options"
+		events="myPlace.events"
+		idkey="myPlace.id">
+	    </ui-gmap-marker>
+	</ui-gmap-google-map>
