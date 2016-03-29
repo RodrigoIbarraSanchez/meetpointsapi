@@ -13,7 +13,9 @@
 
 	    <ui-gmap-marker ng-repeat="meetpoint in meetpoints"
 		coords="meetpoint.coords"
-		idkey="meetpoint.id">
+		idkey="meetpoint.id"
+		events="meetpoint.events"
+		options="meetpoint.options">
 	    </ui-gmap-marker>
 
 	</ui-gmap-google-map>

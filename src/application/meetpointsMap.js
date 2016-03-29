@@ -3,11 +3,6 @@ var config = require("../../config")
 
 module.exports = function (coords, callback) {
 
-	coords = {
-		lat: Number(coords.lat),
-		lng: Number(coords.lng)
-	}
-
 	var radio = config.minimumRadioDistance
 	var meetpoints = []
 	var closest = null

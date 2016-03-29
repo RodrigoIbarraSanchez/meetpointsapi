@@ -3,7 +3,23 @@ angular.module('packmvp.meetpointService', [])
 .service('meetpointService', ['$http', 'config',
 function (                     $http,   config) {
 	
-	this.setMap = function (init, whenPosition, setMeetpoints){
+	var meetpointIcon = new google.maps.MarkerImage(
+		"http://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png",
+		null, /* size is determined at runtime */
+		null, /* origin is 0,0 */
+		null, /* anchor is bottom center of the scaled image */
+		new google.maps.Size(35, 35)
+	)
+
+	var meetpointIconOrigin = new google.maps.MarkerImage(
+		"http://maps.google.com/mapfiles/kml/shapes/ranger_station.png",
+		null, /* size is determined at runtime */
+		null, /* origin is 0,0 */
+		null, /* anchor is bottom center of the scaled image */
+		new google.maps.Size(35, 35)
+	)
+
+	this.setMap = function (init, whenPosition, setMeetpoints, setClosest){
 
 		init({
 			center: {
@@ -16,6 +32,16 @@ function (                     $http,   config) {
 					var map = this.getGMap()
 					map.setCenter(position)
 					smoothZoom(map, 16, map.getZoom(), ready)
+				},
+				setClosest: function (meetpointId, meetpoints, returnMarkers) {
+					var map = this.getGMap()
+
+					meetpoints.forEach(function (meetpoint, index, meetpoints) {
+						if (meetpoint.id == meetpointId) {
+							meetpoint.options.icon = meetpointIconOrigin
+						}
+					})
+
 				}
 			},
             options:{
@@ -23,7 +49,27 @@ function (                     $http,   config) {
             }
 		})
 
+		$http.get(config.apiUrl+'/meetpoints')
+		.then(function (res) {
+			if (res.data.success) {
+				setMeetpoints(res.data.meetpoints)
+			}
+			else
+				console.log("Error")			
+		})
+
 		navigator.geolocation.getCurrentPosition(function (position) {
+
+			$http.get(config.apiUrl+'/meetpoints?filter=map&lat='+position.coords.latitude+'&lng='+position.coords.longitude)
+			.then(function (res) {
+				if (res.data.success) {
+					setClosest(res.data.map.closest._id, {lat: position.coords.latitude, lng: position.coords.longitude})
+				}
+				else
+					console.log("Error")			
+			})
+
+
 			whenPosition({
 				lat: position.coords.latitude,
 				lng: position.coords.longitude
@@ -38,6 +84,7 @@ function (                     $http,   config) {
 					animation: google.maps.Animation.DROP
 				},
 				events: {
+					/*
 					dragend: function (marker, eventName, args) {
 						var lat = marker.getPosition().lat()
 						var lng = marker.getPosition().lng()
@@ -46,6 +93,7 @@ function (                     $http,   config) {
 							setMeetpoints(meetpoints)
 						})
 					}
+					*/
 				}
 			})
 		})
@@ -53,15 +101,23 @@ function (                     $http,   config) {
 
 	this.createMeetpointsMarkers = function (meetpoints, callback) {
 
-		var markers = []
+		var markers = [] 
 
 		meetpoints.forEach(function (meetpoint, index, meetpoints) {
-			console.log('paso 2')
 			markers.push({
-				id: meetpoint.name,
+				id: meetpoint._id,
 				coords: {
 					latitude: meetpoint.coordinates.lat,
 					longitude: meetpoint.coordinates.lng
+				},
+				options:{
+					title: meetpoint._id,
+					icon: meetpointIcon
+				},
+				events: {
+					click: function (marker, eventName, args) {
+						console.log('click en: '+ marker.getTitle())
+					}
 				}
 			})
 
@@ -74,8 +130,8 @@ function (                     $http,   config) {
 	// the smooth zoom function
 	function smoothZoom(map, max, cnt, ready) {
 	    if (cnt >= max) {
-	            ready();
-	        }
+            ready();
+        }
 	    else {
 	        z = google.maps.event.addListener(map, 'zoom_changed', function(event){
 	            google.maps.event.removeListener(z);

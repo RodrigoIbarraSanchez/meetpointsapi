@@ -15,14 +15,21 @@ function (                                $scope,   $state,   meetpointService) 
 		$scope.map = map
 		$scope.myPlace = {id: 'myPlace'}
 	}, function (position, myPlace) {
+		/*
 		$scope.$apply(function(){
 			$scope.map.control.animateRefresh(position, function () {
 				$scope.myPlace = myPlace
 			})
 		})
+		*/
 	}, function (meetpoints) {
 		meetpointService.createMeetpointsMarkers(meetpoints, function (markers) {
 			$scope.meetpoints = markers
+		})
+	}, function (closestMeetpoint, position) {
+		$scope.map.control.animateRefresh(position, function () {
+			// $scope.myPlace = myPlace
+			$scope.map.control.setClosest(closestMeetpoint, $scope.meetpoints)
 		})
 	})
 

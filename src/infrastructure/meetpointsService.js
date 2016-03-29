@@ -22,8 +22,8 @@ exports.list = function (req, res) {
 
 exports.generateMap = function (req, res) {
 	var coords = {
-		lat: req.query.lat,
-		lng: req.query.lng
+		lat: Number(req.query.lat),
+		lng: Number(req.query.lng)
 	};
 	
 	meetpointsMap(coords, function (map) {
