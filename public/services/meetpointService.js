@@ -19,6 +19,8 @@ function (                     $http,   config) {
 		new google.maps.Size(35, 35)
 	)
 
+	var closestId = ''
+
 	this.setMap = function (init, whenPosition, setMeetpoints, setClosest){
 
 		init({
@@ -34,6 +36,7 @@ function (                     $http,   config) {
 					smoothZoom(map, 16, map.getZoom(), ready)
 				},
 				setClosest: function (meetpointId, meetpoints, returnMarkers) {
+					closestId = meetpointId
 					var map = this.getGMap()
 
 					meetpoints.forEach(function (meetpoint, index, meetpoints) {
@@ -63,7 +66,8 @@ function (                     $http,   config) {
 			$http.get(config.apiUrl+'/meetpoints?filter=map&lat='+position.coords.latitude+'&lng='+position.coords.longitude)
 			.then(function (res) {
 				if (res.data.success) {
-					setClosest(res.data.map.closest._id, {lat: position.coords.latitude, lng: position.coords.longitude})
+					//setClosest(res.data.map.closest._id, {lat: position.coords.latitude, lng: position.coords.longitude})
+					setClosest(res.data.map.closest._id, res.data.map.closest.coordinates)
 				}
 				else
 					console.log("Error")			
@@ -116,7 +120,9 @@ function (                     $http,   config) {
 				},
 				events: {
 					click: function (marker, eventName, args) {
-						console.log('click en: '+ marker.getTitle())
+						//console.log('click en: '+ marker.getTitle())
+						//marker.setIcon(meetpointIconOrigin)
+						setOrigin(marker.getTitle())
 					}
 				}
 			})
@@ -125,6 +131,17 @@ function (                     $http,   config) {
 				callback(markers)
 			}
 		})
+
+		function setOrigin(originId) {
+			markers.forEach(function (marker) {
+				if (originId != marker.id) {
+					marker.options.icon = meetpointIcon
+				}
+				else{
+					marker.options.icon = meetpointIconOrigin
+				}
+			})
+		}
 	}
 
 	// the smooth zoom function

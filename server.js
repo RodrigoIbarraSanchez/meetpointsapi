@@ -25,4 +25,4 @@ app.use("/api", require("./src/presenter/meetpointsRouter"))
 
 // Start Server
 app.listen(port)
-console.log("Magic happens at http://loclahost:" + port)
+console.log("Magic happens at http://localhost:" + port)
